@@ -18,7 +18,9 @@
 
 
 (defn max-element [a-seq]
-  (apply max a-seq))
+  (if (empty? a-seq)
+    nil
+  (apply max a-seq)))
 
 (defn seq-max [seq-1 seq-2]
   (if (> (count seq-1) (count seq-2)) seq-1 seq-2))
@@ -67,12 +69,13 @@
 
 
 (defn seq= [a-seq b-seq]
-  (if (and (empty? a-seq) (empty? b-seq))
-    true
-  (and
-   (= (first a-seq) (first b-seq))
-   (seq= (rest a-seq) (rest b-seq))
-  )))
+  (if (not (= (empty? a-seq) (empty? b-seq)))
+    false
+    (or
+     (and (empty? a-seq) (empty? b-seq))
+     (and
+     (= (first a-seq) (first b-seq))
+     (seq= (rest a-seq) (rest b-seq))))))
 
 (defn my-map [f seq-1 seq-2]
  (if (or (empty? seq-1) (empty? seq-2))
@@ -142,21 +145,43 @@
     ))
 
 (defn my-take [n coll]
-  (if (and (>= n 1) (not (empty? coll)))
-  (conj (my-take (dec n) (rest coll)) (first coll))
-    ()))
 
-(defn my-drop [n coll]
-  [:-])
+  (if (or (<= n 1) (empty? (rest coll)))
+      (if (zero? n)
+        '()
+        (cons (first coll) ()))
+    (conj (my-take (dec n) (rest coll)) (first coll))
+     ))
+
+
+(defn my-drop [n a-seq]
+  (if (>= n (count a-seq))
+    ()
+  (reverse (my-take (- (count a-seq) n) (reverse a-seq)))))
 
 (defn halve [a-seq]
-  [:-])
+  (let
+    [split (int (/ (count a-seq) 2))]
+    (vector (my-take split a-seq) (my-drop split a-seq))))
 
 (defn seq-merge [a-seq b-seq]
-  [:-])
+  (cond (empty? a-seq) b-seq
+          (empty? b-seq) a-seq
+          :else
+         (let [
+        a (first a-seq)
+        b (first b-seq)
+        smaller (if (<= a b) a b)
+        a-seq2 (if (<= a b) (rest a-seq) a-seq)
+        b-seq2 (if (<= a b) b-seq (rest b-seq))
+        ]
+          (conj (seq-merge a-seq2 b-seq2) smaller))))
 
 (defn merge-sort [a-seq]
-  [:-])
+  (if (or (empty? a-seq) (= (count a-seq) 1))
+    a-seq
+    (let [[a b] (halve a-seq)]
+      (seq-merge (merge-sort a) (merge-sort b)))))
 
 (defn split-into-monotonics [a-seq]
   [:-])
