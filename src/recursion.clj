@@ -121,7 +121,7 @@
 (defn rotations [a-seq]
   (if (empty? a-seq)
     '(())
-    (map-indexed (fn [i x] (concat (subvec a-seq i) (subvec a-seq 0 i))) a-seq)))
+    (map-indexed (fn [i x] (concat (subvec (vec a-seq) i) (subvec (vec a-seq) 0 i))) a-seq)))
 
 (defn my-frequencies-helper [freqs a-seq]
   (if (empty? a-seq)
@@ -186,8 +186,26 @@
 (defn split-into-monotonics [a-seq]
   [:-])
 
-(defn permutations [a-set]
-  [:-])
+
+(defn permutations [a]
+(let [rots (rotations a)]
+  (
+   cond
+   (= (count a) 1) a
+   :else
+   (apply concat
+   (map
+    (fn [rot]
+
+        (map
+       (fn [x] (cons (first rot) (flatten [x])))
+    (permutations (rest rot))
+    ))
+    rots
+   )
+   ))
+   ))
+
 
 (defn powerset [a-set]
   [:-])
